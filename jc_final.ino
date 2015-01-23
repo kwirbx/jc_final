@@ -1,5 +1,7 @@
+#include <ArduinoTweeno.h>
+
 // test.ino
-#include "ArduinoTweeno.h"
+//#include "ArduinoTweeno.h"
 #include "Adafruit_NeoPixel.h"
 
 
@@ -66,7 +68,7 @@ void setup(){
     // set opacity calculation applied 
     // to all layers. use this method
     // to dim the tail light to save battery
-    comp.setGlobalOpacity(0.1);
+    comp.setGlobalOpacity(0.5);
 
     // running light that is always on
 	byte runningPxData[16 * NUM_PX_PROPS] = {
@@ -101,27 +103,31 @@ void setup(){
 
 
     // right turn signal
-	byte rightSigPxData[6 * NUM_PX_PROPS] = {
+	byte rightSigPxData[8 * NUM_PX_PROPS] = {
 		50,50,0,9, // r, g, b, x
 		100,100,0,10, // r, g, b, x
 		100,100,0,11, // r, g, b, x
 		100,100,0,12, // r, g, b, x
 		100,100,0,13, // r, g, b, x
-		50,50,0,14 // r, g, b, x
+		50,50,0,14, // r, g, b, x
+                100,100,0,2,
+                100,100,0,6
 	};
-	rightSig = comp.addLayer(6, rightSigPxData);
+	rightSig = comp.addLayer(8, rightSigPxData);
     
 
     // left turn signal
-	byte leftSigPxData[6 * NUM_PX_PROPS] = {
+	byte leftSigPxData[8 * NUM_PX_PROPS] = {
 		50,50,0,1, // r, g, b, x
 		100,100,0,2, // r, g, b, x
 		100,100,0,3, // r, g, b, x
 		100,100,0,4, // r, g, b, x
 		100,100,0,5, // r, g, b, x
-		50,50,0,6 // r, g, b, x
+		50,50,0,6, // r, g, b, x
+                100,100,0,9,
+                100,100,0,13
 	};
-	leftSig = comp.addLayer(6, leftSigPxData);
+	leftSig = comp.addLayer(8, leftSigPxData);
 
 	strip.begin();
 	strip.show();
@@ -174,25 +180,16 @@ void loop(){
   
   
     // UPDATE BRAKE RIGHT
-    if(updateSensorState(brakePinR, BRAKE_RIGHT)){
+    if((updateSensorState(brakePinR, BRAKE_RIGHT)) || (updateSensorState(brakePinL, BRAKE_LEFT))) {
         // if brake switch is low, turn
         // the brake on
-        if((state[BRAKE_RIGHT] == LOW)){
+        if(((state[BRAKE_RIGHT] == LOW)|| (state[BRAKE_LEFT] == LOW))) {
             brake->on();    
         } else {
             brake->off();
         }
     }
     
-       if(updateSensorState(brakePinL, BRAKE_LEFT)){
-        // if brake switch is low, turn
-        // the brake on
-        if((state[BRAKE_LEFT] == LOW)){
-            brake->on();    
-        } else {
-            brake->off();
-        }
-    }
     
  
     
